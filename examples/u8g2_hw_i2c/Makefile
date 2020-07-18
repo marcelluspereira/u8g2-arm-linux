@@ -10,7 +10,7 @@
 
 # C-SKY Linux:  csky-linux-gcc
 
-CC=gcc
+CC=arm-linux-gnueabihf-gcc
 
 # IP Address of your PI
 PI=root@192.168.100.1
@@ -23,7 +23,7 @@ OUTDIR=../../bin
 LDIR= -L ../../lib
 LIBS=  -lm
 
-CFLAGS= $(IDIR) -W -Wall
+CFLAGS= $(IDIR) -W -Wall -O3
 
 OBJ+=u8g2_hw_i2c.o\
 	../../port/U8g2lib.o\

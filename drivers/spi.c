@@ -60,14 +60,26 @@ int openSPIDevice(const char* device, uint8_t mode, uint8_t bits, uint32_t speed
         pabort("can't get max speed hz");
     }
 
-    // printf("spi mode: %d\n", mode);
-    // printf("bits per word: %d\n", bits);
-    // printf("max speed: %d Hz (%d KHz)\n", speed, speed/1000);
+     printf("spi mode: %d\n", mode);
+     printf("bits per word: %d\n", bits);
+     printf("max speed: %d Hz (%d KHz)\n", speed, speed/1000);
 
     return fd;
 }
 
 int SPITransfer(int fd, struct spi_ioc_transfer* tr)
+{
+    int ret;
+    ret = ioctl(fd, SPI_IOC_MESSAGE(1), tr);
+    if (ret < 1)
+    {
+        pabort("can't send spi message");
+    }
+
+    return 0;
+}
+
+int SPITransferMulti(int fd, struct spi_ioc_transfer* tr, uint8_t argint)
 {
     int ret;
     ret = ioctl(fd, SPI_IOC_MESSAGE(1), tr);

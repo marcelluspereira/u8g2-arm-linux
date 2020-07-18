@@ -7,10 +7,11 @@ int openI2CDevice(const char* device)
     sprintf(filename, device);
     if ((i2c_fd = open(filename,O_RDWR)) < 0) 
 	{
-        printf("Failed to open the bus.");
+        printf("Failed to open the bus %s.",filename);
         /* ERROR HANDLING; you can check errno to see what went wrong */
         return -1;
     }
+    printf("\nOpen the bus %s.", filename);
     return i2c_fd;
 }
 
@@ -18,7 +19,7 @@ void setI2CSlave(int i2c_fd,int addr)
 {    
     if (ioctl(i2c_fd, I2C_SLAVE, addr) < 0) 
 	{
-        printf("Failed to acquire bus access and/or talk to slave.\n");
+        printf("Failed to acquire bus access and/or talk to slave %02x.\n",addr);
         /* ERROR HANDLING; you can check errno to see what went wrong */
         // exit(1);
     }

@@ -1,7 +1,7 @@
 #include "U8g2lib.h"
 
 static int i2c_device;
-static const char i2c_bus[] = "/dev/i2c-1";
+static const char i2c_bus[] = "/dev/i2c-0";
 
 static int spi_device;
 static const char spi_bus[] = "/dev/spidev0.0";
@@ -16,15 +16,18 @@ uint8_t u8x8_arm_linux_gpio_and_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int
             break;    
 
         case U8X8_MSG_DELAY_100NANO:        // delay arg_int * 100 nano seconds
-            sleep_ns(arg_int * 100);
+            //sleep_ns(arg_int * 100);
+            sleep_ns(arg_int);
             break;
 
         case U8X8_MSG_DELAY_10MICRO:        // delay arg_int * 10 micro seconds
-            sleep_us(arg_int * 10);
+            //sleep_us(arg_int * 10);
+            sleep_ns(arg_int);
             break;
 
         case U8X8_MSG_DELAY_MILLI:            // delay arg_int * 1 milli second
-            sleep_ms(arg_int);
+            //sleep_ms(arg_int);
+            sleep_ns(arg_int);
             break;
 
         case U8X8_MSG_DELAY_I2C:
@@ -274,33 +277,34 @@ uint8_t u8x8_byte_arm_linux_hw_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, v
 uint8_t u8x8_byte_arm_linux_hw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr) 
 {    
     uint8_t *data;
-    uint8_t tx[2], rx[2];
+    uint8_t tx[arg_int+1], rx[arg_int+1];
     uint8_t internal_spi_mode;
 
     switch(msg) 
     {
         case U8X8_MSG_BYTE_SEND:
             data = (uint8_t *)arg_ptr;
-            // printf("Buffering Data %d \n", arg_int);
+            //printf("Buffering Data %d \n", arg_int);
 
-            while( arg_int > 0) 
-            {
+            //while( arg_int > 0) 
+            //{
                 // printf("%.2X ", (uint8_t)*data);
                 tx[0] = (uint8_t)*data;
                 struct spi_ioc_transfer tr = {
-                    .tx_buf = (unsigned long)tx,
+                    //.tx_buf = (unsigned long)tx,
+                    .tx_buf = (unsigned long)arg_ptr,
                     .rx_buf = (unsigned long)rx,
-                    .len = 1,
+                    .len = arg_int,
                     .delay_usecs = 0,
-                    .speed_hz = 500000,
+                    .speed_hz = 25000000,
                     .bits_per_word = 8,
                 };
 
                 SPITransfer(spi_device, &tr);
-                data++;
-                arg_int--;
-            }  
-            // printf("\n");
+             //   data++;
+             //   arg_int--;
+            //}  
+             //printf("\n");
             break;
 
         case U8X8_MSG_BYTE_INIT:
@@ -340,6 +344,7 @@ uint8_t u8x8_byte_arm_linux_hw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, v
 
         case U8X8_MSG_BYTE_END_TRANSFER:      
             break;
+
 
         default:
             return 0;

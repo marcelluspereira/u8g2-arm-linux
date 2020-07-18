@@ -3,8 +3,7 @@
 
 #define acme_width 182
 #define acme_height 64
-#define NUMERO_DE_BANDAS 8
-const uint8_t acme_bits[] = {
+static char acme_bits[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 
@@ -139,82 +138,35 @@ const uint8_t acme_bits[] = {
 
 int main(void)
 {
-  u8g2_t u8g2;
-  int i = 0, redesenha = 0;;
-  int valores_atuais[NUMERO_DE_BANDAS]={0}, novos_valores[NUMERO_DE_BANDAS]={0}, diferenca[NUMERO_DE_BANDAS]={0};
+    u8g2_t u8g2;
 
-  // Initialization
-  u8g2_Setup_ssd1322_nhd_256x64_f(&u8g2, U8G2_R0, u8x8_byte_arm_linux_hw_spi, u8x8_arm_linux_gpio_and_delay);
-  u8x8_SetPin(u8g2_GetU8x8(&u8g2), U8X8_PIN_DC, OLED_SPI_PIN_DC);
-  u8x8_SetPin(u8g2_GetU8x8(&u8g2), U8X8_PIN_RESET, OLED_SPI_PIN_RES);
-  // u8x8_SetPin(u8g2_GetU8x8(&u8g2), U8X8_PIN_CS, OLED_SPI_PIN_CS);
-  srand(time(NULL));
+    // Initialization
+    u8g2_Setup_ssd1322_nhd_256x64_f(&u8g2, U8G2_R0, u8x8_byte_arm_linux_hw_spi, u8x8_arm_linux_gpio_and_delay);
+    u8x8_SetPin(u8g2_GetU8x8(&u8g2), U8X8_PIN_DC, OLED_SPI_PIN_DC);
+    u8x8_SetPin(u8g2_GetU8x8(&u8g2), U8X8_PIN_RESET, OLED_SPI_PIN_RES);
+    // u8x8_SetPin(u8g2_GetU8x8(&u8g2), U8X8_PIN_CS, OLED_SPI_PIN_CS);
 
-  u8g2_InitDisplay(&u8g2);
-  u8g2_SetPowerSave(&u8g2, 0);
+    u8g2_InitDisplay(&u8g2);
+    u8g2_SetPowerSave(&u8g2, 0);
 
-  // Draw
-  /* full buffer example, setup procedure ends in _f */
-  u8g2_ClearBuffer(&u8g2);
-  u8g2_SendBuffer(&u8g2);
+    // Draw
+    /* full buffer example, setup procedure ends in _f */
+    u8g2_ClearBuffer(&u8g2);
 
-  u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
-  u8g2_DrawStr(&u8g2, 1, 18, "U8g2 HW SPI");
-  u8g2_DrawStr(&u8g2, 1, 36, "The quick brown fox jumps over the lazy dog.");
+    u8g2_SetFont(&u8g2, u8g2_font_ncenB08_tr);
+    u8g2_DrawStr(&u8g2, 1, 18, "U8g2 HW SPI");
 
-  u8g2_SetFont(&u8g2, u8g2_font_unifont_t_symbols);
-  u8g2_DrawGlyph(&u8g2, 112, 56, 0x2603 );
-
-  u8g2_SendBuffer(&u8g2);
-  sleep(2);
-
-  u8g2_DrawXBM(&u8g2,0,0,acme_width,acme_height,acme_bits);
-
-  u8g2_SendBuffer(&u8g2);
-
-  sleep(2);
-  u8g2_ClearDisplay(&u8g2);
-  u8g2_ClearBuffer(&u8g2);
-
-  //Loop para desenho de 10 VUs
-  while(redesenha++ < 100){
-    // Cria novos valores aleatórios entre 0 e 64
-    
-    for(i=0; i<NUMERO_DE_BANDAS; i++){
-      novos_valores[i] = rand()%64;
-      diferenca[i] = valores_atuais[i] - novos_valores[i];
-    }
-
-    //Desenha a diferença entre eles
-    for(i=0; i<NUMERO_DE_BANDAS; i++){
-      u8g2_SetDrawColor(&u8g2, 1);
-      if(novos_valores[i] > valores_atuais[i]){
-        u8g2_DrawBox(&u8g2, i*8, 0, 8, valores_atuais[i]);
-      }
-      
-      if(novos_valores[i] < valores_atuais[i]){
-        u8g2_SetDrawColor(&u8g2, 0);
-        u8g2_DrawBox(&u8g2, i*8, valores_atuais[i], 8, 64-diferenca[i]);
-      }
-      valores_atuais[i] = novos_valores[i];
-      //printf("coluna[%d]= %d\n\r", i, 64+diferenca[i]);
-    }
-    // while(i<256){
-    // 	int valor;
-    // 	valor = rand()%64;
-    // 	printf("Valor = %u.\n",valor);
-    // 	u8g2_DrawBox(&u8g2, i, valor, 8, 64-valor);
-    // 	i = i + 8;
-    // }
+    u8g2_SetFont(&u8g2, u8g2_font_unifont_t_symbols);
+    u8g2_DrawGlyph(&u8g2, 112, 56, 0x2603 );
 
     u8g2_SendBuffer(&u8g2);
 
-    //sleep(1);
-  }
-    
-//	u8g2_SetDrawColor(&u8g2, 1);
+    u8g2_DrawXBM(&u8g2,0,0,acme_width,acme_height,acme_bits);
 
-  printf("Initialized ...\n");
+    u8g2_SendBuffer(&u8g2);
 
-  return 0;
+
+    printf("Initialized ...\n");
+
+    return 0;
 }
